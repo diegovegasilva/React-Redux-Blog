@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { connect } from 'react-redux';
+import { createPost } from '../actions';
 import { Link } from 'react-router-dom';
 
 
@@ -24,8 +25,8 @@ class PostsNew extends Component {
                         <textarea
                             className="form-control"
                             {...field.input}
-                        ></textarea>                    
-                    )  
+                        ></textarea>
+                    )
             }
         }
         return (
@@ -34,13 +35,15 @@ class PostsNew extends Component {
                 {fieldType()}
                 <div className="text-help">
                     {field.meta.touched ? field.meta.error : ''}
-                </div>    
+                </div>
             </div>
         )
     }
 
     onSubmit(values) {
-        console.log(values)
+        this.props.createPost(values, () => {
+            this.props.history.push('/');
+        });
     }
 
     render() {
@@ -50,24 +53,25 @@ class PostsNew extends Component {
         return (
             <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                 <Field
-                    type="text"    
+                    type="text"
                     label="Title"
                     name="title"
                     component={this.renderField}
                 />
                 <Field
-                    type="text"    
+                    type="text"
                     label="Categories"
                     name="categories"
                     component={this.renderField}
                 />
                 <Field
-                    type="textarea"    
+                    type="textarea"
                     label="Post content"
                     name="content"
                     component={this.renderField}
                 />
                 <button className="btn btn-primary" type="submit">Save</button>
+                <Link to="/" className="btn btn-danger">Cancel</Link>
             </form>
         )
     }
@@ -91,4 +95,6 @@ function validate(values) {
 export default reduxForm({
     validate: validate,
     form: 'PostsNewForm'
-})(PostsNew);
+})(
+    connect(null, { createPost })(PostsNew)
+    );
